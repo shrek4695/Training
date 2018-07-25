@@ -1,0 +1,204 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Banking
+{
+    class BankSystem
+    {
+        struct BankDetails
+        {
+            public String AccountHolderName;
+            public int AccountNumber;
+            public int AccountBalance;
+            public String BranchName;
+            public String IFSCCode;
+            public String AccountType;
+        };
+        public enum AccType 
+        {
+            Current=1,
+            Savings=2,
+            DMAT=3 
+        };
+        static BankDetails[] ObjectArray=new BankDetails[1000];
+        public static int Counter = 0;
+        public static void AddUser()
+        {
+                Console.WriteLine("Enter Account Number");
+                ObjectArray[Counter].AccountNumber = int.Parse(Console.ReadLine());
+                Console.WriteLine("Enter Account Holder Name");
+                ObjectArray[Counter].AccountHolderName = Console.ReadLine();
+                Console.WriteLine("Enter Account Type");
+                Console.WriteLine("1-Current");
+                Console.WriteLine("2-Savings");
+                Console.WriteLine("3-DMAT");
+                ObjectArray[Counter].AccountType = Enum.GetName(typeof(AccType),int.Parse(Console.ReadLine()));
+                Console.WriteLine("Enter Branch Name");
+                ObjectArray[Counter].BranchName = Console.ReadLine();
+                Console.WriteLine("Enter IFSC Code");
+                ObjectArray[Counter].IFSCCode = Console.ReadLine();
+                Console.WriteLine("Enter Account Balance");
+                ObjectArray[Counter].AccountBalance = int.Parse(Console.ReadLine());
+        }
+        public static void Display()
+        {
+            int loop;
+            for (loop = 0; loop < Counter; loop++)
+            {
+                    Console.WriteLine("Account Holder Name:"+ObjectArray[loop].AccountHolderName);
+                    Console.WriteLine("Account Number:" + ObjectArray[loop].AccountNumber);
+                    Console.WriteLine("Account Type:" + ObjectArray[loop].AccountType);
+                    Console.WriteLine("Branch Name:" + ObjectArray[loop].BranchName);
+                    Console.WriteLine("IFSC Code:" + ObjectArray[loop].IFSCCode);
+                    Console.WriteLine("Account Balance:" + ObjectArray[loop].AccountBalance);
+                    Console.WriteLine();
+             }
+         }
+        public static void SearchbyAccountNum(int AccNum)
+        {
+            int loop;
+            for (loop = 0; loop <Counter; loop++)
+            {
+                if (ObjectArray[loop].AccountNumber == AccNum)
+                {
+                    Console.WriteLine("Account Holder Name:" + ObjectArray[loop].AccountHolderName);
+                    Console.WriteLine("Account Number:" + ObjectArray[loop].AccountNumber);
+                    Console.WriteLine("Account Type:" + ObjectArray[loop].AccountType);
+                    Console.WriteLine("Branch Name:" + ObjectArray[loop].BranchName);
+                    Console.WriteLine("IFSC Code:" + ObjectArray[loop].IFSCCode);
+                    Console.WriteLine("Account Balance:" + ObjectArray[loop].AccountBalance);
+                    Console.WriteLine();
+                    break;
+                }
+
+            }   
+        }
+        public static int DepositAmount(int AccNum, int Amount)
+        {
+            int loop;
+            for (loop = 0; loop < Counter; loop++)
+            {
+                if (ObjectArray[loop].AccountNumber == AccNum)
+                {
+                    ObjectArray[loop].AccountBalance = ObjectArray[loop].AccountBalance + Amount;
+                    break;
+                }
+            }
+            return ObjectArray[loop].AccountBalance;
+        }
+        public static int WithdrawAmount(int AccNum, int Amount)
+        {
+            int AccAmount=0,loop;
+            for (loop = 0; loop < Counter; loop++)
+            {
+                if (ObjectArray[loop].AccountNumber == AccNum)
+                {
+                    AccAmount = ObjectArray[loop].AccountBalance;
+                    break;
+                }
+            }
+            if (ObjectArray[loop].AccountType == "Savings")
+            {
+                if ( AccAmount - Amount >= 1000)
+                    return (AccAmount - Amount);
+                else
+                {
+                    Console.WriteLine("Insufficient Balance");
+                    return AccAmount;
+                }
+            }
+            else if (ObjectArray[loop].AccountType == "Current")
+            {
+                if (AccAmount - Amount >= 0)
+                    return (AccAmount - Amount);
+                else
+                {
+                    Console.WriteLine("Insufficient Balance");
+                    return AccAmount;
+                }
+            }
+            else
+            {
+                    if (AccAmount - Amount >= -1000)
+                        return (AccAmount - Amount);
+                    else
+                    {
+                        Console.WriteLine("Insufficient Balance");
+                        return AccAmount;
+                    }
+            }
+        }
+	public static double Interest(int AccNum)
+	{
+	    int AccAmount=0,loop; String AccType=" ";
+            for (loop = 0; loop < Counter; loop++)
+            {
+                if (ObjectArray[loop].AccountNumber == AccNum)
+                {
+                    AccAmount = ObjectArray[loop].AccountBalance;
+		    AccType = ObjectArray[loop].AccountType;
+                    break;
+                }
+	    }
+		if(AccType=="Savings")
+		{
+			return (4*AccAmount/100);
+		}
+		else if(AccType=="Current")
+		{
+			return (1*AccAmount/100);
+		}
+		else
+			return 0;
+	}
+        static void Main(string[] args)
+        {
+            int UserChoice,AccNum;
+
+            do
+            {
+                Console.WriteLine("1-Add User");
+                Console.WriteLine("2-Display Details of Accounts");
+                Console.WriteLine("3-Search by Account Number");
+                Console.WriteLine("4-Deposit Amount");
+                Console.WriteLine("5-Withdraw Amount");
+                Console.WriteLine("6-Calculate Interest");
+                Console.WriteLine("7-Exit Menu");
+                UserChoice = int.Parse(Console.ReadLine());
+                switch(UserChoice)
+                {
+                    case 1: AddUser();
+                            Counter++;
+                            break;
+                    case 2: Display();
+                            break;
+                    case 3: Console.WriteLine("Enter Account Number");
+                            SearchbyAccountNum(int.Parse(Console.ReadLine()));
+                            break;
+                    case 4: Console.WriteLine("Enter Account Number");
+                            AccNum = int.Parse(Console.ReadLine());
+                            Console.WriteLine("Enter Amount to Deposit");
+                            int Amount=int.Parse(Console.ReadLine());
+                            Console.WriteLine("Available Balance=" + DepositAmount(AccNum,Amount));
+                            break;
+                    case 5: Console.WriteLine("Enter Account Number");
+                            AccNum = int.Parse(Console.ReadLine());
+                            Console.WriteLine("Enter Amount to Withdraw");
+                            Amount=int.Parse(Console.ReadLine());
+                            Console.WriteLine("Available Balance=" + WithdrawAmount(AccNum,Amount));
+                            break;
+                    case 6: Console.WriteLine("Enter Account Number");
+                            AccNum = int.Parse(Console.ReadLine());
+			    Console.WriteLine("Interest="+Interest(AccNum));
+                            break;
+                    case 7: Console.WriteLine("Thank You");
+                            break;
+                    default:Console.WriteLine("Invalid Input! Please Try Again");
+                            break;
+                }
+            } while (UserChoice != 7);
+        }
+    }
+}
