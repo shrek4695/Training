@@ -1,0 +1,157 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.IO;
+
+delegate String AssignDepartment(String Qualifi);
+namespace Company
+{
+    class QualificationException : Exception
+    {
+        public QualificationException(string name)
+            : base(String.Format("Qualification Cannot be Empty"))
+        {
+
+        }
+
+    }
+    class Employee:Department
+    {
+        private String EmpName;
+        private int EmpId;
+        private String EmpEmail;
+        private String EmpDOB;
+        private String Qualification;
+        public String setName
+        {
+            get
+            {
+                return EmpName;
+            }
+            set
+            {
+                EmpName = value;
+            }
+        }
+        public int setId 
+        {
+            get 
+            {
+                return EmpId ;
+            }
+            set
+            {
+                EmpId = value;
+            }
+        }
+        public String setEmail 
+        {
+            get
+            {
+                return EmpEmail;
+            }
+            set
+            {
+                EmpEmail = value;
+            }
+        }
+        public String setDOB
+        {
+            get
+            {
+                return EmpDOB;
+            }
+            set
+            {
+                EmpDOB = value;
+            }
+        }
+        public String setQualification
+        {
+            get
+            {
+                return Qualification;
+            }
+            set
+            {
+                Qualification=value;
+            }
+        }
+    }
+    class Department 
+    {
+        static List<Employee> EmployeeDetails=new List<Employee>();
+        public static void AddEmployeeDetails(Employee emp)
+        {
+            while (true)
+            {
+                try
+                {
+                    EmployeeDetails.Add(emp);
+                    Console.WriteLine("Enter Employee Name");
+                    emp.setName = Console.ReadLine();
+                    Console.WriteLine("Enter Employee ID");
+                    emp.setId = int.Parse(Console.ReadLine());
+                    Console.WriteLine("Enter Employee Email");
+                    emp.setEmail = Console.ReadLine();
+                    Console.WriteLine("Enter Employee Date Of Birth");
+                    emp.setDOB = Console.ReadLine();
+                    Console.WriteLine("Enter Employee Qualification");
+                    emp.setQualification = Console.ReadLine();
+                    if (String.IsNullOrEmpty(emp.setQualification))
+                        throw new QualificationException(emp.setQualification);
+                    else
+                        break;
+                }
+                catch (QualificationException ex)
+                {
+                    String FileName = @"C:\ExceptionLog.txt";
+                    using (StreamWriter sw = File.AppendText(FileName))
+                        sw.WriteLine(ex.Message);
+                    Console.WriteLine(ex.Message);
+                }
+                catch (Exception e)
+                {
+                    String FileName = @"C:\ExceptionLog.txt";
+                    using (StreamWriter sw = File.AppendText(FileName))
+                        sw.WriteLine(e);
+                    Console.WriteLine("Error Occured!");
+                }
+            }
+        }
+        public static String DepCheck(String Qualifi)
+        {
+            if (Qualifi == "BE" || Qualifi == "BCA" || Qualifi == "BSC")
+                return "IT Department";
+            else 
+                return "Accounts Department";
+        }
+        public static void Main(String[] args)
+        {
+            int UserChoice;
+            do
+            {
+                Console.WriteLine("1-Add Employee Details");
+                Console.WriteLine("2-Exit");
+                Console.WriteLine("Enter Your Choice");
+                UserChoice = int.Parse(Console.ReadLine());
+                switch (UserChoice)
+                {
+                    case 1: Employee emp = new Employee();
+                            AddEmployeeDetails(emp);
+                            AssignDepartment dep = new AssignDepartment(DepCheck);
+                            Console.WriteLine("Employee Added under "+dep(emp.setQualification));
+                            break;
+                    case 2: Console.WriteLine("Thank You");
+                            break;
+                    default:Console.WriteLine("Invalid Input");
+                            break;
+                            
+                }
+            } while (UserChoice != 2);
+        }
+    }
+}
+
+
